@@ -1,0 +1,35 @@
+# The display title for the deployment pipeline
+name: CD Web Deployment Pipeline
+
+# Run on every push to main
+on:
+  push:
+    branches: [ "main" ]
+
+# Permissions granted to the automatic GITHUB_TOKEN
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout Repository Code
+        uses: actions/checkout@v5
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
